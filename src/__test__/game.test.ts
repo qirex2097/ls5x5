@@ -1,4 +1,12 @@
-import { FieldData, createField, WALL, TATE, YOKO } from "../game";
+import {
+  CellData,
+  FieldData,
+  createField,
+  WALL,
+  TATE,
+  YOKO,
+  commandValue,
+} from "../game";
 
 test("Fieldが生成される", () => {
   const field: FieldData = createField([]);
@@ -20,4 +28,11 @@ test("BLOCKの壁を持つField生成される", () => {
   expect(field.cells[2].wall).toBe(WALL.TOP | WALL.BOTTOM);
   expect(field.cells[3].wall).toBe(WALL.TOP | WALL.BOTTOM | WALL.RIGHT);
   expect(field.cells[5].wall).toBe(WALL.LEFT | WALL.BOTTOM | WALL.RIGHT);
+});
+
+test("commandValueはvalueを指定の値に設定する", () => {
+  const cell: CellData = { wall: WALL.NONE };
+  expect(cell.value).not.toBe(1);
+  const newCell: CellData = commandValue(cell, 1);
+  expect(newCell.value).toBe(1);
 });

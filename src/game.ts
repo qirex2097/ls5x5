@@ -20,6 +20,10 @@ type FieldData = {
   cells: CellData[];
 };
 
+type CommandData = {
+  func: (cell: CellData) => CellData;
+};
+
 const createField = (blocks: number[][]): FieldData => {
   const newCells: CellData[] = new Array(TATE * YOKO).fill({ wall: WALL.NONE });
 
@@ -58,5 +62,9 @@ const createField = (blocks: number[][]): FieldData => {
   return { cells: newCells };
 };
 
-export { TATE, YOKO, WALL, createField };
-export type { CellData, FieldData };
+const commandValue = (cell: CellData, value: number): CellData => {
+  return { ...cell, value: value };
+};
+
+export { TATE, YOKO, WALL, createField, commandValue };
+export type { CellData, FieldData, CommandData };

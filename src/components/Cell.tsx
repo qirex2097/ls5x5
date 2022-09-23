@@ -4,9 +4,10 @@ import "./Cell.css"
 
 type CellProps = {
   cell: CellData
+  onClick?: () => void
 }
 
-const Cell: React.FC<CellProps> = ({ cell }: CellProps) => {
+const Cell: React.FC<CellProps> = ({ cell, onClick }: CellProps) => {
   let wallElements: JSX.Element[] = []
   const wall = cell.wall
 
@@ -15,11 +16,11 @@ const Cell: React.FC<CellProps> = ({ cell }: CellProps) => {
   if (wall & WALL.RIGHT) { wallElements = [...wallElements, <div key="right" className="wall right" data-testid="wall" />] }
   if (wall & WALL.BOTTOM) { wallElements = [...wallElements, <div key="bottom" className="wall bottom" data-testid="wall" />] }
 
-  let value: JSX.Element = <></>
+  let valueElement: JSX.Element = <></>
   if (cell.value) {
-    value = <span className="cell value">{cell.value}</span>
+    valueElement = <span className="cell value">{cell.value}</span>
   } else if (cell.candidate) {
-    value = <span className="cell candidate">{cell.candidate!.join(' ')}</span>
+    valueElement = <span className="cell candidate">{cell.candidate!.join(' ')}</span>
   }
 
   let color: { background: string } = { background: "transparent" }
@@ -27,11 +28,9 @@ const Cell: React.FC<CellProps> = ({ cell }: CellProps) => {
     color = { background: cell.color }
   }
 
-  const handleClicked = () => {
-    console.log(`clicked`)
-  }
+  const dummyOnClick = () => {}
 
-  return (<button data-testid="cell" className="cell" style={color} onClick={handleClicked}>{wallElements}{value}</button>)
+  return (<button data-testid="cell" className="cell" style={color} onClick={onClick || dummyOnClick}>{wallElements}{valueElement}</button>)
 }
 
 export { Cell }
