@@ -5,7 +5,9 @@ import {
   WALL,
   TATE,
   YOKO,
-  commandValue,
+  setValue,
+  addCandidate,
+  removeCandidate,
 } from "../game";
 
 test("Fieldが生成される", () => {
@@ -30,9 +32,21 @@ test("BLOCKの壁を持つField生成される", () => {
   expect(field.cells[5].wall).toBe(WALL.LEFT | WALL.BOTTOM | WALL.RIGHT);
 });
 
-test("commandValueはvalueを指定の値に設定する", () => {
+test("setValueはvalueを指定の値に設定する", () => {
   const cell: CellData = { wall: WALL.NONE };
   expect(cell.value).not.toBe(1);
-  const newCell: CellData = commandValue(cell, 1);
+  const newCell: CellData = setValue(cell, 1);
   expect(newCell.value).toBe(1);
+});
+
+test("setValue, addCandidate", () => {
+  const cell: CellData = { wall: WALL.NONE };
+  expect(cell.candidate).not.toBe(1);
+  const newCell: CellData = addCandidate(cell, 1);
+  expect(newCell.candidate!.length).toBe(1);
+  const newCell2: CellData = addCandidate(newCell, 2);
+  expect(newCell2.candidate!.length).toBe(2);
+  const newCell3: CellData = removeCandidate(newCell2, 1);
+  expect(newCell3.candidate!.length).toBe(1);
+  //TODO
 });

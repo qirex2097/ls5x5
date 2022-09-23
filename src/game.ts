@@ -62,9 +62,35 @@ const createField = (blocks: number[][]): FieldData => {
   return { cells: newCells };
 };
 
-const commandValue = (cell: CellData, value: number): CellData => {
+const setValue = (cell: CellData, value: number): CellData => {
   return { ...cell, value: value };
 };
+const addCandidate = (cell: CellData, value: number): CellData => {
+  if (cell.candidate) {
+    if (cell.candidate.indexOf(value) < 0) {
+      return { ...cell, candidate: [...cell.candidate, value].sort() };
+    } else {
+      return cell;
+    }
+  } else {
+    return { ...cell, candidate: [value] };
+  }
+};
+const removeCandidate = (cell: CellData, value: number): CellData => {
+  if (cell.candidate) {
+    return { ...cell, candidate: cell.candidate.filter((v) => v !== value) };
+  } else {
+    return cell;
+  }
+};
 
-export { TATE, YOKO, WALL, createField, commandValue };
+export {
+  TATE,
+  YOKO,
+  WALL,
+  createField,
+  setValue,
+  addCandidate,
+  removeCandidate,
+};
 export type { CellData, FieldData, CommandData };
