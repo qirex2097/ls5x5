@@ -10,10 +10,15 @@ type CommandProps = {
   command: CommandDataJSX
   onClick: () => void
   isSelected: boolean
+  testId: string
 }
 
 const Command = (props: CommandProps) => {
-  return <button className={props.isSelected ? "command selected" : "command"} style={props.command.style} onClick={props.onClick}>
+  return <button
+    data-testid={props.testId}
+    className={props.isSelected ? "command selected" : "command"}
+    style={props.command.style}
+    onClick={props.onClick}>
     {props.command.contents ? props.command.contents : ''}
   </button>
 }
@@ -30,10 +35,11 @@ const Commands = (props: CommandsProps) => {
   commandElements = props.commands.map((v, i) => {
     return <Command key={i}
       command={v}
+      testId={`command-${i}`}
       onClick={() => props.selectCommand(i)} isSelected={props.commandNo === i} />
   })
 
-  return <div className="commands">{commandElements}</div>
+  return <div className="commands" data-testid="commands">{commandElements}</div>
 }
 
 export type { CommandDataJSX }
