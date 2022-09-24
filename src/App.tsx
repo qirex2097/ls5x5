@@ -5,14 +5,8 @@ import { createField, CellData, FieldData, addCandidate, removeCandidate } from 
 import './App.css';
 
 function App() {
-  const field: FieldData = createField([[0, 1, 2, 3, 5], [10, 15, 20, 21, 22], [16, 17, 18, 23, 24], [4, 9, 13, 14, 19], [6, 7, 8, 11, 12]]);
+  const field: FieldData = createField()
   const [commandNo, setCommandNo] = React.useState<number>(-1)
-
-  /*
-  for (let i = 0; i < 25; i++) {
-    field.cells[i].value = i + 1
-  }
-  */
 
   const toggleValue = (cell: CellData, value: number): CellData => {
     if (cell.value && cell.value === value) {
@@ -32,6 +26,17 @@ function App() {
       return addCandidate(cell, value)
     }
   }
+  const toggleColor = (cell: CellData, color: string): CellData => {
+    if (cell.color) {
+      if (cell.color === color) {
+        return { ...cell, color: undefined }
+      } else {
+        return { ...cell, color: color}
+      }
+    } else {
+      return { ...cell, color: color}
+    }
+  }
 
   const commandStyleValue: { [key: string]: string } = { fontSize: "48px" }
   const commandStyle: { [key: string]: string } = { color: "white", fontSize: "24px", textAlign: "left" }
@@ -46,11 +51,11 @@ function App() {
     { contents: "3", style: { ...commandStyle, paddingLeft: "45%" }, func: (cell: CellData) => { return toggleCandidate(cell, 3) } },
     { contents: "4", style: { ...commandStyle, paddingLeft: "67%" }, func: (cell: CellData) => { return toggleCandidate(cell, 4) } },
     { contents: "5", style: { ...commandStyle, paddingLeft: "80%" }, func: (cell: CellData) => { return toggleCandidate(cell, 5) } },
-    { contents: "", style: { background: "lightpink" }, func: (cell: CellData) => { return { ...cell, color: "lightpink" } } },
-    { contents: "", style: { background: "mediumorchid" }, func: (cell: CellData) => { return { ...cell, color: "mediumorchid" } } },
-    { contents: "", style: { background: "slateblue" }, func: (cell: CellData) => { return { ...cell, color: "slateblue" } } },
-    { contents: "", style: { background: "darksalmon" }, func: (cell: CellData) => { return { ...cell, color: "darksalmon" } } },
-    { contents: "", style: { background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
+    { contents: "", style: { background: "lightpink" }, func: (cell: CellData) => { return toggleColor(cell, "lightpink") } },
+    { contents: "", style: { background: "mediumorchid" }, func: (cell: CellData) => { return toggleColor(cell, "mediumorchid") } },
+    { contents: "", style: { background: "slateblue" }, func: (cell: CellData) => { return toggleColor(cell, "slateblue") } },
+    { contents: "", style: { background: "darksalmon" }, func: (cell: CellData) => { return toggleColor(cell, "darksalmon") } },
+    { contents: "CLEAR", style: { fontSize: "24px", background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
   ]
 
   return (<>
