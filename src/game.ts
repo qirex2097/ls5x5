@@ -112,7 +112,16 @@ type CommandData = {
 };
 
 const createField = (): FieldData => {
-  const blocks = pattern_data[Math.floor(Math.random() * pattern_data.length)];
+  const blocks: number[][] =
+    pattern_data[Math.floor(Math.random() * pattern_data.length)];
+  const blocks1: number[][] = _rotateBlocks(blocks);
+  const blocks2: number[][] = _rotateBlocks(blocks1);
+  const blocks3: number[][] = _rotateBlocks(blocks2);
+  const blocksTable: number[][][] = [blocks, blocks1, blocks2, blocks3];
+
+  return _createField(blocksTable[Math.floor(Math.random() * 4)]);
+};
+const _createField = (blocks: number[][]): FieldData => {
   const newCells: CellData[] = new Array(TATE * YOKO).fill({ wall: WALL.NONE });
 
   for (const block of blocks) {
@@ -135,16 +144,16 @@ const createField = (): FieldData => {
   }
 
   for (let i = 0; i < YOKO; i++) {
-    newCells[i] = { wall: newCells[i].wall | WALL.TOP };
+    newCells[i] = { ...newCells[i], wall: newCells[i].wall | WALL.TOP };
   }
   for (let i = 0; i < TATE * YOKO; i += 5) {
-    newCells[i] = { wall: newCells[i].wall | WALL.LEFT };
+    newCells[i] = { ...newCells[i], wall: newCells[i].wall | WALL.LEFT };
   }
   for (let i = YOKO - 1; i < TATE * YOKO; i += 5) {
-    newCells[i] = { wall: newCells[i].wall | WALL.RIGHT };
+    newCells[i] = { ...newCells[i], wall: newCells[i].wall | WALL.RIGHT };
   }
   for (let i = (TATE - 1) * YOKO; i < TATE * YOKO; i++) {
-    newCells[i] = { wall: newCells[i].wall | WALL.BOTTOM };
+    newCells[i] = { ...newCells[i], wall: newCells[i].wall | WALL.BOTTOM };
   }
 
   return { cells: newCells };
@@ -171,6 +180,21 @@ const removeCandidate = (cell: CellData, value: number): CellData => {
     return cell;
   }
 };
+const _rotateBlocks = (blocks: number[][]): number[][] => {
+  let newBlocks: number[][] = [];
+  for (const block of blocks) {
+    let newBlock: number[] = [];
+    for (const e of block) {
+      const convertTable: number[] = [
+        20, 15, 10, 5, 0, 21, 16, 11, 6, 1, 22, 17, 12, 7, 2, 23, 18, 13, 8, 3,
+        24, 19, 14, 9, 4,
+      ];
+      newBlock = [...newBlock, convertTable.indexOf(e)];
+    }
+    newBlocks = [...newBlocks, newBlock];
+  }
+  return newBlocks;
+};
 
 export {
   TATE,
@@ -182,3 +206,7 @@ export {
   removeCandidate,
 };
 export type { CellData, FieldData, CommandData };
+export const __local__ = {
+  _createField,
+  _rotateBlocks,
+};
