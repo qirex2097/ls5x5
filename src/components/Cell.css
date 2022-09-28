@@ -8,10 +8,12 @@
     text-align: center;
 }
 .cell.value {
-    font-size: 48px;
+    font-family: 'Passion One', cursive;
+    font-size: 80px;
     color: black;
 }
 .cell.candidate {
+    font-family: 'Passion One', cursive;
     font-size: 24px;
     color: white;
 }

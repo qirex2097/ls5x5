@@ -1,92 +1,6 @@
+import { latinSquare, patternData } from "./data";
 const TATE: number = 5;
 const YOKO: number = 5;
-
-const pattern_data: number[][][] = [
-  [
-    [0, 1, 2, 5, 10],
-    [4, 9, 14, 13, 18],
-    [24, 23, 22, 21, 19],
-    [20, 15, 16, 11, 6],
-    [3, 7, 8, 12, 17],
-  ],
-  [
-    [0, 1, 2, 5, 10],
-    [4, 3, 8, 7, 6],
-    [24, 23, 22, 21, 17],
-    [20, 15, 16, 11, 12],
-    [9, 13, 14, 18, 19],
-  ],
-  [
-    [0, 1, 2, 5, 10],
-    [4, 3, 8, 7, 6],
-    [24, 23, 19, 14, 9],
-    [20, 21, 22, 17, 18],
-    [11, 12, 13, 15, 16],
-  ],
-  [
-    [0, 1, 2, 5, 10],
-    [4, 3, 8, 7, 12],
-    [24, 19, 14, 13, 9],
-    [20, 15, 16, 11, 6],
-    [17, 18, 21, 22, 23],
-  ],
-  [
-    [0, 1, 2, 3, 5],
-    [4, 9, 14, 13, 18],
-    [24, 23, 22, 21, 19],
-    [20, 15, 10, 11, 6],
-    [7, 8, 12, 16, 17],
-  ],
-  [
-    [0, 1, 2, 3, 5],
-    [4, 9, 14, 13, 18],
-    [24, 23, 22, 21, 19],
-    [20, 15, 16, 17, 12],
-    [6, 7, 8, 10, 11],
-  ],
-  [
-    [0, 1, 2, 5, 6],
-    [4, 9, 14, 3, 13],
-    [24, 23, 22, 19, 18],
-    [20, 15, 10, 21, 11],
-    [7, 8, 12, 16, 17],
-  ],
-  [
-    [0, 1, 2, 5, 6],
-    [4, 3, 8, 7, 12],
-    [24, 23, 22, 17, 16],
-    [20, 15, 10, 21, 11],
-    [9, 13, 14, 18, 19],
-  ],
-  [
-    [0, 1, 6, 7, 12],
-    [4, 9, 3, 8, 2],
-    [24, 23, 19, 14, 13],
-    [20, 21, 22, 17, 18],
-    [5, 10, 11, 15, 16],
-  ],
-  [
-    [0, 1, 5, 10, 15],
-    [4, 3, 2, 7, 6],
-    [24, 23, 19, 14, 9],
-    [20, 21, 22, 17, 18],
-    [8, 11, 12, 13, 16],
-  ],
-  [
-    [0, 1, 5, 10, 15],
-    [4, 3, 2, 7, 6],
-    [24, 23, 19, 14, 9],
-    [20, 21, 16, 11, 12],
-    [8, 13, 17, 18, 22],
-  ],
-  [
-    [0, 1, 5, 6, 10],
-    [4, 9, 3, 2, 7],
-    [24, 23, 19, 18, 14],
-    [20, 15, 21, 22, 17],
-    [8, 11, 12, 13, 16],
-  ],
-];
 
 enum WALL {
   NONE = 0b0000,
@@ -113,7 +27,7 @@ type CommandData = {
 
 const createField = (): FieldData => {
   const blocks: number[][] =
-    pattern_data[Math.floor(Math.random() * pattern_data.length)];
+    patternData[Math.floor(Math.random() * patternData.length)];
   const blocks1: number[][] = _rotateBlocks(blocks);
   const blocks2: number[][] = _rotateBlocks(blocks1);
   const blocks3: number[][] = _rotateBlocks(blocks2);
@@ -196,6 +110,51 @@ const _rotateBlocks = (blocks: number[][]): number[][] => {
   return newBlocks;
 };
 
+const _getBlock = (cellNo: number, blocks: number[][]): number[] => {
+  for (const block of blocks) {
+    if (block.indexOf(cellNo) >= 0) return block;
+  }
+  return [];
+};
+
+const _getPeers = (cellNo: number, blocks: number[][]): number[] => {
+  const cellX = cellNo % YOKO;
+  const cellY = Math.floor(cellNo / YOKO);
+
+  // 横の peers で初期化
+  const yoko: number[] = new Array<number>(YOKO)
+    .fill(cellY * YOKO)
+    .map((e, i) => e + i);
+
+  // 縦の peers を追加
+  const tate: number[] = new Array<number>(TATE)
+    .fill(cellX)
+    .map((e, i) => e + i * YOKO);
+
+  // ブロック内の peers を追加
+  const block: number[] = _getBlock(cellNo, blocks);
+
+  const result: number[] = [...tate, ...yoko, ...block].sort((a, b) => a - b);
+  return result.filter((e, i) => result.indexOf(e) === i);
+};
+
+const resolver = (blocks: number[][]): number[] => {
+  for (const ls of latinSquare) {
+    let flg: boolean = true;
+    for (const block of blocks) {
+      let values: number[] = block.map((v) => ls[v]);
+      if (
+        values.filter((e, i, self) => self.indexOf(e) === i).length <
+        values.length
+      )
+        flg = false;
+    }
+    if (flg) return ls;
+  }
+
+  return [];
+};
+
 export {
   TATE,
   YOKO,
@@ -204,9 +163,11 @@ export {
   setValue,
   addCandidate,
   removeCandidate,
+  resolver,
 };
 export type { CellData, FieldData, CommandData };
 export const __local__ = {
   _createField,
   _rotateBlocks,
+  _getPeers,
 };

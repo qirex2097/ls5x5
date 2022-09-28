@@ -1,22 +1,24 @@
 import './Commands.css'
-import { CommandData } from '../game'
 
-type CommandDataJSX = CommandData & {
-  contents: string
-  style: { [key: string]: string }
+type CommandLooks = {
+  contents: string | JSX.Element
+  style?: { [key: string]: string }
+  className?: string
 }
 
 type CommandProps = {
-  command: CommandDataJSX
+  command: CommandLooks
   onClick: () => void
   isSelected: boolean
   testId: string
 }
 
 const Command = (props: CommandProps) => {
+//  const className: string = `${props.isSelected ? "command selected" : "command"} ${props.command.className}`
+  const className: string = `cell command ${props.command.className} ${props.isSelected ? "selected" : ""}`
   return <button
     data-testid={props.testId}
-    className={props.isSelected ? "command selected" : "command"}
+    className={className}
     style={props.command.style}
     onClick={props.onClick}>
     {props.command.contents ? props.command.contents : ''}
@@ -24,23 +26,23 @@ const Command = (props: CommandProps) => {
 }
 
 type CommandsProps = {
-  commands: CommandDataJSX[]
-  commandNo: number
+  commands: CommandLooks[]
+  commandNo?: number
   selectCommand: (i: number) => void
 }
 
-const Commands = (props: CommandsProps) => {
+const Commands = ({commands, commandNo = -1, selectCommand}: CommandsProps) => {
   let commandElements: JSX.Element[] = []
 
-  commandElements = props.commands.map((v, i) => {
+  commandElements = commands.map((v, i) => {
     return <Command key={i}
       command={v}
       testId={`command-${i}`}
-      onClick={() => props.selectCommand(i)} isSelected={props.commandNo === i} />
+      onClick={() => selectCommand(i)} isSelected={commandNo === i} />
   })
 
   return <div className="commands" data-testid="commands">{commandElements}</div>
 }
 
-export type { CommandDataJSX }
+export type { CommandLooks }
 export { Commands }

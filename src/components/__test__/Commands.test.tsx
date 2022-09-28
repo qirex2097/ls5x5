@@ -1,8 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { CellData } from '../../game'
-import { CommandDataJSX, Commands } from "../Commands";
+import { CommandLooks, Commands } from "../Commands";
 
-const commandData: CommandDataJSX[] = [
+type CellCommand = CommandLooks & {
+  func: (cell: CellData) => CellData;
+}
+
+const commandData: CellCommand[] = [
     { contents: "", style: {}, func: (cell: CellData): CellData => { return cell }},
     { contents: "1", style: {}, func: (cell: CellData): CellData => { return cell }},
     { contents: "2", style: {background: 'red'}, func: (cell: CellData): CellData => { return cell }},
@@ -24,14 +28,14 @@ test("１番コマンドのコンテンツは１", () => {
   const commandNo: number = 1;
   const testId: string = `command-${commandNo}`
   render(<Commands commands={commandData} commandNo={-1} selectCommand={(i: number) => {}}/>)
-  expect(screen.getByTestId(testId)).toHaveTextContent(commandData[commandNo].contents)
+  expect(screen.getByTestId(testId)).toHaveTextContent(commandData[commandNo].contents as string)
 })
 
 test("２番コマンドのコンテンツは background: red", () => {
   const commandNo: number = 2;
   const testId: string = `command-${commandNo}`
   render(<Commands commands={commandData} commandNo={-1} selectCommand={(i: number) => {}}/>)
-  expect(screen.getByTestId(testId)).toHaveStyle(commandData[commandNo].style)
+  expect(screen.getByTestId(testId)).toHaveStyle(commandData[commandNo].style!)
 })
 
 test("選択中コマンドのスタイル", () => {

@@ -8,6 +8,7 @@ import {
   setValue,
   addCandidate,
   removeCandidate,
+  resolver,
   __local__,
 } from "../game";
 
@@ -68,4 +69,38 @@ test("_rotateBlocksは機能する", () => {
   expect(blocks[1][2]).toBe(14);
   expect(blocks[1][3]).toBe(13);
   expect(blocks[1][4]).toBe(12);
+});
+
+const sample_blocks: number[][] = [
+  [0, 1, 2, 5, 10],
+  [4, 9, 14, 13, 18],
+  [24, 23, 22, 21, 19],
+  [20, 15, 16, 11, 6],
+  [3, 7, 8, 12, 17],
+];
+test("_getPeersは正しく仲間を返す", () => {
+  const [cellNo, cellX, cellY] = [12, 2, 2]; //テストするセル番号、セルＸ座標、セルＹ座標
+  const block = sample_blocks[4]; //テストセルを含むブロック
+
+  const peers: number[] = __local__._getPeers(cellNo, sample_blocks);
+  expect(peers.includes(cellNo)).toBe(true);
+  for (let i = cellY * YOKO; i < 5; i++) {
+    expect(peers.includes(i)).toBe(true);
+  }
+  for (let i = cellX; i < TATE * YOKO; i += YOKO) {
+    expect(peers.includes(i)).toBe(true);
+  }
+  for (const i of block) {
+    expect(peers.includes(i)).toBe(true);
+  }
+});
+test("resolver", () => {
+  const answer: number[] = resolver(sample_blocks);
+
+  expect(answer.length).toBe(25);
+  expect(answer[0]).toBe(1);
+  expect(answer[1]).toBe(2);
+  expect(answer[2]).toBe(3);
+  expect(answer[3]).toBe(4);
+  expect(answer[4]).toBe(5);
 });

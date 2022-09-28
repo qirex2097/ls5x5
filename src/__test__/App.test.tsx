@@ -5,5 +5,5 @@ import App from '../App';
 test('renders learn react link', () => {
   render(<App />);
   expect(screen.getByTestId('field')).toBeInTheDocument();
-  expect(screen.getByTestId('commands')).toBeInTheDocument();
+  expect(screen.getAllByTestId('commands').length).toBe(2);
 });

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Field } from './components/Field'
-import { Commands, CommandDataJSX } from './components/Commands'
+import { Commands, CommandLooks } from './components/Commands'
 import { createField, CellData, FieldData, addCandidate, removeCandidate } from './game';
 import './App.css';
 
@@ -35,31 +35,82 @@ function App() {
       if (cell.color === color) {
         return { ...cell, color: undefined }
       } else {
-        return { ...cell, color: color}
+        return { ...cell, color: color }
       }
     } else {
-      return { ...cell, color: color}
+      return { ...cell, color: color }
     }
   }
 
-  const commandStyleValue: { [key: string]: string } = { fontSize: "48px" }
-  const commandStyle: { [key: string]: string } = { color: "white", fontSize: "24px", textAlign: "left" }
-  const commands: CommandDataJSX[] = [
-    { contents: "1", style: commandStyleValue, func: (cell: CellData) => { return toggleValue(cell, 1) } },
-    { contents: "2", style: commandStyleValue, func: (cell: CellData) => { return toggleValue(cell, 2) } },
-    { contents: "3", style: commandStyleValue, func: (cell: CellData) => { return toggleValue(cell, 3) } },
-    { contents: "4", style: commandStyleValue, func: (cell: CellData) => { return toggleValue(cell, 4) } },
-    { contents: "5", style: commandStyleValue, func: (cell: CellData) => { return toggleValue(cell, 5) } },
-    { contents: "1", style: { ...commandStyle, paddingLeft: "10%" }, func: (cell: CellData) => { return toggleCandidate(cell, 1) } },
-    { contents: "2", style: { ...commandStyle, paddingLeft: "27%" }, func: (cell: CellData) => { return toggleCandidate(cell, 2) } },
-    { contents: "3", style: { ...commandStyle, paddingLeft: "45%" }, func: (cell: CellData) => { return toggleCandidate(cell, 3) } },
-    { contents: "4", style: { ...commandStyle, paddingLeft: "67%" }, func: (cell: CellData) => { return toggleCandidate(cell, 4) } },
-    { contents: "5", style: { ...commandStyle, paddingLeft: "80%" }, func: (cell: CellData) => { return toggleCandidate(cell, 5) } },
+  type CellCommand = CommandLooks & {
+    func: (cell: CellData) => CellData;
+  }
+
+  const candidateColor: string = "lightgrey"
+  const commands: CellCommand[] = [
+    {
+      contents: "1", className: "value",
+      func: (cell: CellData) => { return toggleValue(cell, 1) }
+    },
+    {
+      contents: "2", className: "value",
+      func: (cell: CellData) => { return toggleValue(cell, 2) }
+    },
+    {
+      contents: "3", className: "value",
+      func: (cell: CellData) => { return toggleValue(cell, 3) }
+    },
+    {
+      contents: "4", className: "value",
+      func: (cell: CellData) => { return toggleValue(cell, 4) }
+    },
+    {
+      contents: "5", className: "value",
+      func: (cell: CellData) => { return toggleValue(cell, 5) }
+    },
+    {
+      className: "candidate",
+      contents: <><span>1</span><span style={{ color: candidateColor }}> 2 3 4 5</span></>,
+      func: (cell: CellData) => { return toggleCandidate(cell, 1) }
+    },
+    {
+      className: "candidate",
+      contents: <><span style={{ color: candidateColor }}>1 </span><span>2</span><span style={{ color: candidateColor }}> 3 4 5</span></>,
+      func: (cell: CellData) => { return toggleCandidate(cell, 2) }
+    },
+    {
+      className: "candidate",
+      contents: <><span style={{ color: candidateColor }}>1 2 </span><span>3</span><span style={{ color: candidateColor }}> 4 5</span></>,
+      func: (cell: CellData) => { return toggleCandidate(cell, 3) }
+    },
+    {
+      className: "candidate",
+      contents: <><span style={{ color: candidateColor }}>1 2 3 </span><span>4</span><span style={{ color: candidateColor }}> 5</span></>,
+      func: (cell: CellData) => { return toggleCandidate(cell, 4) }
+    },
+    {
+      className: "candidate",
+      contents: <><span style={{ color: candidateColor }}>1 2 3 4 </span><span>5</span></>,
+      func: (cell: CellData) => { return toggleCandidate(cell, 5) }
+    },
     { contents: "", style: { background: "lightpink" }, func: (cell: CellData) => { return toggleColor(cell, "lightpink") } },
     { contents: "", style: { background: "mediumorchid" }, func: (cell: CellData) => { return toggleColor(cell, "mediumorchid") } },
     { contents: "", style: { background: "slateblue" }, func: (cell: CellData) => { return toggleColor(cell, "slateblue") } },
     { contents: "", style: { background: "darksalmon" }, func: (cell: CellData) => { return toggleColor(cell, "darksalmon") } },
     { contents: "CLEAR", style: { fontSize: "24px", background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
+  ]
+
+  type BoardCommand = CommandLooks & {
+    func: () => void
+  }
+
+  const commandStyleValue: { [key: string]: string } = { fontSize: "48px" }
+  const commands2: BoardCommand[] = [
+    { contents: "1", style: commandStyleValue, func: () => { } },
+    { contents: "1", style: commandStyleValue, func: () => { } },
+    { contents: "1", style: commandStyleValue, func: () => { } },
+    { contents: "1", style: commandStyleValue, func: () => { } },
+    { contents: "OK", style: { background: "darkgrey", fontSize: "24px" }, func: () => { console.log(`pushed OK`) } },
   ]
 
   const handleCellClick = (cell: CellData): CellData => {
@@ -71,6 +122,7 @@ function App() {
     <Field cells={field.cells} func={handleCellClick} />
     <Commands commands={commands} commandNo={commandNo}
       selectCommand={(newCommandNo: number) => { if (newCommandNo === commandNo) setCommandNo(-1); else setCommandNo(newCommandNo) }} />
+    <Commands commands={commands2} selectCommand={(i: number) => { commands2[i].func() }} />
   </>);
 }
 
