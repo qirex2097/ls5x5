@@ -2,11 +2,7 @@
 
 body {
   margin: 0;
-  font-family: 'Passion One', cursive;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: 'Passion One', cursive;
-}
