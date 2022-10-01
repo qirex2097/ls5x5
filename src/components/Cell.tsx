@@ -30,7 +30,7 @@ const Cell: React.FC<CellProps> = ({ cell, onClick }: CellProps) => {
 
   const dummyOnClick = () => {}
 
-  return (<button data-testid="cell" className="cell" style={color} onClick={onClick || dummyOnClick}>{wallElements}{valueElement}</button>)
+  return (<button data-testid="cell" className="cell" style={color} onMouseDown={onClick || dummyOnClick}>{wallElements}{valueElement}</button>)
 }
 
 export { Cell }

@@ -9,12 +9,12 @@
 }
 .cell.value {
     font-family: 'Passion One', cursive;
-    font-size: 80px;
+    font-size: 72px;
     color: black;
 }
 .cell.candidate {
     font-family: 'Passion One', cursive;
-    font-size: 24px;
+    font-size: 18px;
     color: white;
 }
 

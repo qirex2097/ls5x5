@@ -33,7 +33,17 @@ const createField = (): FieldData => {
   const blocks3: number[][] = _rotateBlocks(blocks2);
   const blocksTable: number[][][] = [blocks, blocks1, blocks2, blocks3];
 
-  return _createField(blocksTable[Math.floor(Math.random() * 4)]);
+  const field: FieldData = _createField(
+    blocksTable[Math.floor(Math.random() * 4)]
+  );
+
+  const hint: { [key: number]: number } = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 5 };
+
+  Object.keys(hint).forEach(
+    (key) => (field.cells[parseInt(key)].value = hint[parseInt(key)])
+  );
+
+  return field;
 };
 const _createField = (blocks: number[][]): FieldData => {
   const newCells: CellData[] = new Array(TATE * YOKO).fill({ wall: WALL.NONE });

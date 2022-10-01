@@ -5,12 +5,9 @@ import { createField, CellData, FieldData, addCandidate, removeCandidate } from 
 import './App.css';
 
 function App() {
-  const field: FieldData = createField()
+//  const field: FieldData = createField()
+  const [field] = React.useState<FieldData>(createField())
   const [commandNo, setCommandNo] = React.useState<number>(-1)
-
-  for (let i = 0; i < 5; i++) {
-    field.cells[i].value = i + 1
-  }
 
   const toggleValue = (cell: CellData, value: number): CellData => {
     if (cell.value && cell.value === value) {
@@ -119,7 +116,7 @@ function App() {
     return commands[commandNo].func(cell)
   }
 
-  return (<div style={{margin: 0, padding: "20px", background: background, position: "relative"}}>
+  return (<div className="App" style={{margin: 0, padding: "10px", background: background, position: "relative"}}>
     <Field cells={field.cells} func={handleCellClick} />
     <Commands commands={commands} commandNo={commandNo}
       selectCommand={(newCommandNo: number) => { if (newCommandNo === commandNo) setCommandNo(-1); else setCommandNo(newCommandNo) }} />
