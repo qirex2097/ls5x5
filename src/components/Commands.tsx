@@ -14,7 +14,6 @@ type CommandProps = {
 }
 
 const Command = (props: CommandProps) => {
-//  const className: string = `${props.isSelected ? "command selected" : "command"} ${props.command.className}`
   const className: string = `cell command ${props.command.className} ${props.isSelected ? "selected" : ""}`
   return <button
     data-testid={props.testId}

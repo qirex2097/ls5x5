@@ -89,20 +89,20 @@ const commands: CellCommand[] = [
   { contents: "", style: { background: "mediumorchid" }, func: (cell: CellData) => { return toggleColor(cell, "mediumorchid") } },
   { contents: "", style: { background: "slateblue" }, func: (cell: CellData) => { return toggleColor(cell, "slateblue") } },
   { contents: "", style: { background: "darksalmon" }, func: (cell: CellData) => { return toggleColor(cell, "darksalmon") } },
-  { contents: "", style: { fontSize: "24px", background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
+  { className: "value", contents: "CLEAR", style: { fontSize: "28px", background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
 ]
 
 type BoardCommand = CommandLooks & {
-  func: (field: FieldData) => void
+  func?: (field: FieldData) => void
 }
 
-const commandStyle: { [key: string]: string } = { background: "white", fontSize: "64px", fontFamily: "monospace" }
 const background: string = "khaki"
+const commandStyle: { [key: string]: string } = { background: "white", fontSize: "64px", fontFamily: "monospace" }
 const commands2: BoardCommand[] = [
-  { contents: "↪️", style: commandStyle, func: (field: FieldData) => { } },
-  { contents: "↩️", style: commandStyle, func: (field: FieldData) => { } },
-  { contents: "", style: { background: background, border: "none" }, func: () => { } },
-  { contents: "", style: { background: background, border: "none" }, func: () => { } },
+  { contents: "↪️", style: commandStyle, },
+  { contents: "↩️", style: commandStyle, },
+  { contents: "", style: { background: background, border: "none" }, },
+  { contents: "", style: { background: background, border: "none" }, },
   { contents: "✔️", style: commandStyle, func: (field: FieldData) => { if (checkField(field)) console.log(`OK`); else console.log(`NG`) } },
 ]
 
@@ -110,8 +110,9 @@ function App() {
   const [field, setField] = React.useState<FieldData>(createField())
   const [commandNo, setCommandNo] = React.useState<number>(-1)
 
+  /* セルが押された時の処理 */
   const handleCellClick = (cell: CellData): void => {
-    if (commandNo < 0) return;
+    if (commandNo < 0 || !commands[commandNo].func) return;
 
     const newCells: CellData[] = field.cells.map((v) => {
       if (v === cell) {
@@ -122,12 +123,21 @@ function App() {
     })
     setField({ ...field, cells: newCells })
   }
+  /* 上段のコマンドパネルが押された時の処理 */
+  const selectCommand = (newCommandNo: number) => {
+    if (newCommandNo === commandNo) setCommandNo(-1);
+    else setCommandNo(newCommandNo);
+  }
+  /* 下段のコマンドパネルが押された時の処理 */
+  const selectCommand2 = (idx: number) => {
+    if (commands2[idx].func) commands2[idx].func!(field)
+  }
 
-  return (<div className="App" style={{ margin: 0, padding: "10px", background: background, position: "relative" }}>
+  const bodyColor: string = checkField(field) ? "purple" : background
+  return (<div className="App" style={{ margin: 0, padding: "10px", background: bodyColor, position: "relative" }}>
     <Field cells={field.cells} handleClick={handleCellClick} />
-    <Commands commands={commands} commandNo={commandNo}
-      selectCommand={(newCommandNo: number) => { if (newCommandNo === commandNo) setCommandNo(-1); else setCommandNo(newCommandNo) }} />
-    <Commands commands={commands2} selectCommand={(i: number) => { commands2[i].func(field) }} />
+    <Commands commands={commands} commandNo={commandNo} selectCommand={selectCommand} />
+    <Commands commands={commands2} selectCommand={selectCommand2} />
   </div>);
 }
 
