@@ -6,6 +6,7 @@
     padding: 0;
     border: none;
     text-align: center;
+    transition: all 0.5s ease;
 }
 .cell.value {
     font-family: 'Passion One', cursive;

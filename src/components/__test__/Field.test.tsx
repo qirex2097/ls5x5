@@ -1,22 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import { Field } from '../Field'
-import { CellData, WALL } from '../../game'
-
-const cells: CellData[] = [
-    { wall: WALL.NONE }
-]
+import { FieldData, CellData, createField } from '../../game'
 
 const dummyCommand = (cell: CellData): CellData => {
-    return cell;
+  return cell;
 }
 
 test('Fieldが描画される', () => {
-    render(<Field cells={cells} handleClick={dummyCommand} />)
-    expect(screen.getByTestId('field')).toBeInTheDocument()
+  const field: FieldData = createField()
+
+  render(<Field field={field} handleClick={dummyCommand} />)
+  expect(screen.getByTestId('field')).toBeInTheDocument()
 })
 
 test('Fieldは25のCellを持つ', () => {
-    const cells: CellData[] = new Array<CellData>(25).fill({ wall: WALL.NONE })
-    render(<Field cells={cells} handleClick={dummyCommand}/>)
-    expect(screen.getAllByRole('button').length).toBe(25)
+  const field: FieldData = createField()
+
+  render(<Field field={field} handleClick={dummyCommand} />)
+  expect(screen.getAllByRole('button').length).toBe(25)
 })

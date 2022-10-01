@@ -20,6 +20,7 @@ type CellData = {
 type FieldData = {
   blocks: number[][];
   cells: CellData[];
+  solved: boolean;
 };
 
 type CommandData = {
@@ -81,7 +82,7 @@ const _createField = (blocks: number[][]): FieldData => {
     newCells[i] = { ...newCells[i], wall: newCells[i].wall | WALL.BOTTOM };
   }
 
-  return { blocks: blocks, cells: newCells };
+  return { blocks: blocks, cells: newCells, solved: false };
 };
 
 const setValue = (cell: CellData, value: number): CellData => {

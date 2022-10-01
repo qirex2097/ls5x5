@@ -9,4 +9,5 @@
   background: lightgreen;
   margin-top: 0px;
   height: 360px;
+  transition: all 1.0s ease;
 }

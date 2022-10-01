@@ -89,11 +89,11 @@ const commands: CellCommand[] = [
   { contents: "", style: { background: "mediumorchid" }, func: (cell: CellData) => { return toggleColor(cell, "mediumorchid") } },
   { contents: "", style: { background: "slateblue" }, func: (cell: CellData) => { return toggleColor(cell, "slateblue") } },
   { contents: "", style: { background: "darksalmon" }, func: (cell: CellData) => { return toggleColor(cell, "darksalmon") } },
-  { className: "value", contents: "CLEAR", style: { fontSize: "28px", background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
+  { className: "value", contents: "DELETE", style: { fontSize: "24px", background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
 ]
 
 type BoardCommand = CommandLooks & {
-  func?: (field: FieldData) => void
+  func?: (field: FieldData) => FieldData
 }
 
 const background: string = "khaki"
@@ -103,7 +103,10 @@ const commands2: BoardCommand[] = [
   { contents: "↩️", style: commandStyle, },
   { contents: "", style: { background: background, border: "none" }, },
   { contents: "", style: { background: background, border: "none" }, },
-  { contents: "✔️", style: commandStyle, func: (field: FieldData) => { if (checkField(field)) console.log(`OK`); else console.log(`NG`) } },
+  { contents: "✔️", style: commandStyle, func: (field: FieldData) => { 
+    if (field.solved) return createField();
+    if (checkField(field)) return {...field, solved: true}; else return field
+  }, },
 ]
 
 function App() {
@@ -130,12 +133,13 @@ function App() {
   }
   /* 下段のコマンドパネルが押された時の処理 */
   const selectCommand2 = (idx: number) => {
-    if (commands2[idx].func) commands2[idx].func!(field)
+    if (!commands2[idx].func) return
+    const newField: FieldData = commands2[idx].func!(field)
+    setField(newField)
   }
 
-  const bodyColor: string = checkField(field) ? "purple" : background
-  return (<div className="App" style={{ margin: 0, padding: "10px", background: bodyColor, position: "relative" }}>
-    <Field cells={field.cells} handleClick={handleCellClick} />
+  return (<div className="App" style={{ margin: 0, padding: "10px", background: background, position: "relative" }}>
+    <Field field={field} handleClick={handleCellClick} />
     <Commands commands={commands} commandNo={commandNo} selectCommand={selectCommand} />
     <Commands commands={commands2} selectCommand={selectCommand2} />
   </div>);
