@@ -11,12 +11,12 @@ const dummyCommand = (cell: CellData): CellData => {
 }
 
 test('Fieldが描画される', () => {
-    render(<Field cells={cells} func={dummyCommand} />)
+    render(<Field cells={cells} handleClick={dummyCommand} />)
     expect(screen.getByTestId('field')).toBeInTheDocument()
 })
 
 test('Fieldは25のCellを持つ', () => {
     const cells: CellData[] = new Array<CellData>(25).fill({ wall: WALL.NONE })
-    render(<Field cells={cells} func={dummyCommand}/>)
+    render(<Field cells={cells} handleClick={dummyCommand}/>)
     expect(screen.getAllByRole('button').length).toBe(25)
 })

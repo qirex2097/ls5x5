@@ -18,6 +18,7 @@ type CellData = {
 };
 
 type FieldData = {
+  blocks: number[][];
   cells: CellData[];
 };
 
@@ -80,7 +81,7 @@ const _createField = (blocks: number[][]): FieldData => {
     newCells[i] = { ...newCells[i], wall: newCells[i].wall | WALL.BOTTOM };
   }
 
-  return { cells: newCells };
+  return { blocks: blocks, cells: newCells };
 };
 
 const setValue = (cell: CellData, value: number): CellData => {
@@ -165,6 +166,12 @@ const resolver = (blocks: number[][]): number[] => {
   return [];
 };
 
+const checkField = (field: FieldData): boolean => {
+  const answer: number[] = resolver(field.blocks);
+  const values: number[] = field.cells.map((cell) => cell.value || 0);
+  return answer.every((e, i) => e === values[i]);
+};
+
 export {
   TATE,
   YOKO,
@@ -174,6 +181,7 @@ export {
   addCandidate,
   removeCandidate,
   resolver,
+  checkField,
 };
 export type { CellData, FieldData, CommandData };
 export const __local__ = {
