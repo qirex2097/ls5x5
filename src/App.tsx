@@ -3,6 +3,7 @@ import { Field } from './components/Field'
 import { Commands, CommandLooks } from './components/Commands'
 import { createField, CellData, FieldData, addCandidate, removeCandidate, checkField } from './game';
 import './App.css';
+import { UndoRedo, resetAction, setAction, undoAction, redoAction, canUndo, canRedo } from './undo'
 
 const toggleValue = (cell: CellData, value: number): CellData => {
   if (cell.value && cell.value === value) {
@@ -96,36 +97,58 @@ type BoardCommand = CommandLooks & {
   func?: (field: FieldData) => FieldData
 }
 
-const background: string = "khaki"
-const commandStyle: { [key: string]: string } = { background: "white", fontSize: "64px", fontFamily: "monospace" }
-const commands2: BoardCommand[] = [
-  { contents: "↪️", style: commandStyle, },
-  { contents: "↩️", style: commandStyle, },
-  { contents: "", style: { background: background, border: "none" }, },
-  { contents: "", style: { background: background, border: "none" }, },
-  {
-    className: "moji", key: "AAA",
-    contents: "️FINISH", style: { fontSize: "24px", background: "orange" },
-    func: (field: FieldData) => {
-      if (field.solved) return createField();
-      if (checkField(field)) return { ...field, solved: true }; else return field
-    },
-  },
-]
-
-const commands3: BoardCommand[] = [
-  {
-    className: "moji", key: "AAA",
-    contents: "RETRY", style: { fontSize: "24px", background: "purple" },
-    func: (field: FieldData) => {
-      if (field.solved) return createField(); else return field
-    }
-  },
-]
 
 function App() {
   const [field, setField] = React.useState<FieldData>(createField())
   const [commandNo, setCommandNo] = React.useState<number>(-1)
+  const [state, setState] = React.useState<UndoRedo<CellData[]>>(resetAction<CellData[]>(field.cells))
+
+
+  const background: string = "khaki"
+  const undoColor: string = canUndo(state) ? "white" : "lightgrey"
+  const redoColor: string = canRedo(state) ? "white" : "lightgrey"
+  const commands2: BoardCommand[] = [
+    {
+      className: "moji",
+      contents: "UNDO", style: { fontSize: "24px", color: undoColor, background: "orange" },
+      func: (field: FieldData) => {
+        const newState: UndoRedo<CellData[]> = undoAction<CellData[]>(state)
+        setState(newState)
+        return { ...field, cells: newState.current }
+      }
+    },
+    {
+      className: "moji",
+      contents: "REDO", style: { fontSize: "24px", color: redoColor, background: "orange" },
+      func: (field: FieldData) => {
+        const newState: UndoRedo<CellData[]> = redoAction<CellData[]>(state)
+        setState(newState)
+        return { ...field, cells: newState.current }
+      }
+    },
+    { contents: "", style: { background: background, border: "none" }, },
+    { contents: "", style: { background: background, border: "none" }, },
+    {
+      className: "moji", key: "AAA",
+      contents: "️FINISH", style: { fontSize: "24px", background: "orange" },
+      func: (field: FieldData) => {
+        if (field.solved) return createField();
+        if (checkField(field)) return { ...field, solved: true }; else return field
+      },
+    },
+  ]
+
+  const commands3: BoardCommand[] = [
+    {
+      className: "moji", key: "AAA",
+      contents: "RETRY", style: { fontSize: "24px", background: "purple" },
+      func: (field: FieldData) => {
+        const newField: FieldData = createField();
+        setState(resetAction<CellData[]>(newField.cells))
+        return newField;
+      }
+    },
+  ]
 
   /* セルが押された時の処理 */
   const handleCellClick = (cell: CellData): void => {
@@ -139,6 +162,7 @@ function App() {
       }
     })
     setField({ ...field, cells: newCells })
+    setState(setAction<CellData[]>(state, newCells))
   }
   /* 上段のコマンドパネルが押された時の処理 */
   const selectCommand = (newCommandNo: number) => {
