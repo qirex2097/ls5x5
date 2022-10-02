@@ -20,6 +20,7 @@ type CellData = {
 type FieldData = {
   blocks: number[][];
   cells: CellData[];
+  answer: number[];
   solved: boolean;
 };
 
@@ -39,7 +40,8 @@ const createField = (): FieldData => {
     blocksTable[Math.floor(Math.random() * 4)]
   );
 
-  const hint: { [key: number]: number } = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 5 };
+  //  const hint: { [key: number]: number } = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 5 };
+  const hint: { [key: number]: number } = _getHintCells(field);
 
   Object.keys(hint).forEach(
     (key) => (field.cells[parseInt(key)].value = hint[parseInt(key)])
@@ -82,7 +84,10 @@ const _createField = (blocks: number[][]): FieldData => {
     newCells[i] = { ...newCells[i], wall: newCells[i].wall | WALL.BOTTOM };
   }
 
-  return { blocks: blocks, cells: newCells, solved: false };
+  /** 答えを作成 */
+  const answer: number[] = _shuffleAnswer(resolver(blocks)); // 答えのラテン方陣
+
+  return { blocks: blocks, cells: newCells, answer: answer, solved: false };
 };
 
 const setValue = (cell: CellData, value: number): CellData => {
@@ -167,8 +172,51 @@ const resolver = (blocks: number[][]): number[] => {
   return [];
 };
 
+/** 1-5の数字をランダムに1-5へ変換 */
+const _shuffleAnswer = (answer: number[]) => {
+  const transform: number[] = [6, 7, 8, 9, 10].sort(
+    (a, b) => Math.random() - 0.5
+  );
+  const newAnswer: number[] = answer.map((e) => {
+    return transform[e - 1] - 5;
+  });
+  return newAnswer;
+};
+
+const _getHintCells = (field: FieldData): { [key: number]: number } => {
+  /**
+   * 各値（１－５）が割り当てられているセル番号の配列 values を作成
+   */
+  const values: { [key: number]: number[] } = {};
+  field.answer.forEach((e, i) => {
+    if (values[e]) {
+      values[e] = [...values[e], i];
+    } else {
+      values[e] = [i];
+    }
+  });
+
+  /** １－５のうちのいずれかのヒントを隠す excludeKey */
+  const excludeKey: string =
+    Object.keys(values)[Math.floor(Math.random() * Object.keys(values).length)];
+  /**
+   * ヒントのセル番号とそこに入れる値 cellNo : value のヒント hintCells を作成
+   */
+  let hintCells: { [key: number]: number } = {};
+  Object.keys(values).forEach((key) => {
+    if (excludeKey !== key) {
+      const p: number = Math.floor(
+        Math.random() * values[parseInt(key)].length
+      );
+      hintCells[values[parseInt(key)][p]] = parseInt(key);
+    }
+  });
+
+  return hintCells;
+};
+
 const checkField = (field: FieldData): boolean => {
-  const answer: number[] = resolver(field.blocks);
+  const answer: number[] = field.answer;
   const values: number[] = field.cells.map((cell) => cell.value || 0);
   return answer.every((e, i) => e === values[i]);
 };
@@ -189,4 +237,5 @@ export const __local__ = {
   _createField,
   _rotateBlocks,
   _getPeers,
+  _getHintCells,
 };

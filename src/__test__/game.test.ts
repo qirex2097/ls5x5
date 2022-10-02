@@ -79,9 +79,6 @@ const sample_blocks: number[][] = [
   [20, 15, 16, 11, 6],
   [3, 7, 8, 12, 17],
 ];
-const sample_answer: number[] = [
-  1, 2, 3, 4, 5, 5, 1, 2, 3, 4, 4, 5, 1, 2, 3, 3, 4, 5, 1, 2, 2, 3, 4, 5, 1,
-];
 
 test("_getPeersは正しく仲間を返す", () => {
   const [cellNo, cellX, cellY] = [12, 2, 2]; //テストするセル番号、セルＸ座標、セルＹ座標
@@ -113,6 +110,6 @@ test("resolver", () => {
 test("checkField", () => {
   const field: FieldData = __local__._createField(sample_blocks);
   expect(checkField(field)).toBe(false);
-  field.cells.forEach((cell, i) => (cell.value = sample_answer[i]));
+  field.cells.forEach((cell, i) => (cell.value = field.answer[i]));
   expect(checkField(field)).toBe(true);
 });
