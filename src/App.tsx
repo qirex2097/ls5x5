@@ -86,10 +86,10 @@ const commands: CellCommand[] = [
     func: (cell: CellData) => { return toggleCandidate(cell, 5) }
   },
   { contents: "", style: { background: "lightpink" }, func: (cell: CellData) => { return toggleColor(cell, "lightpink") } },
-  { contents: "", style: { background: "mediumorchid" }, func: (cell: CellData) => { return toggleColor(cell, "mediumorchid") } },
-  { contents: "", style: { background: "slateblue" }, func: (cell: CellData) => { return toggleColor(cell, "slateblue") } },
   { contents: "", style: { background: "darksalmon" }, func: (cell: CellData) => { return toggleColor(cell, "darksalmon") } },
-  { className: "value", contents: "DELETE", style: { fontSize: "24px", background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
+  { contents: "", style: { background: "slateblue" }, func: (cell: CellData) => { return toggleColor(cell, "slateblue") } },
+  { contents: "", style: { background: "mediumorchid" }, func: (cell: CellData) => { return toggleColor(cell, "mediumorchid") } },
+  { className: "moji", contents: "DELETE", style: { fontSize: "24px", background: "lightgreen" }, func: (cell: CellData) => { return { ...cell, value: undefined, candidate: undefined, color: undefined } } },
 ]
 
 type BoardCommand = CommandLooks & {
@@ -103,10 +103,24 @@ const commands2: BoardCommand[] = [
   { contents: "↩️", style: commandStyle, },
   { contents: "", style: { background: background, border: "none" }, },
   { contents: "", style: { background: background, border: "none" }, },
-  { contents: "✔️", style: commandStyle, func: (field: FieldData) => { 
-    if (field.solved) return createField();
-    if (checkField(field)) return {...field, solved: true}; else return field
-  }, },
+  {
+    className: "moji", key: "AAA",
+    contents: "️FINISH", style: { fontSize: "24px", background: "orange" },
+    func: (field: FieldData) => {
+      if (field.solved) return createField();
+      if (checkField(field)) return { ...field, solved: true }; else return field
+    },
+  },
+]
+
+const commands3: BoardCommand[] = [
+  {
+    className: "moji", key: "AAA",
+    contents: "RETRY", style: { fontSize: "24px", background: "purple" },
+    func: (field: FieldData) => {
+      if (field.solved) return createField(); else return field
+    }
+  },
 ]
 
 function App() {
@@ -131,17 +145,19 @@ function App() {
     if (newCommandNo === commandNo) setCommandNo(-1);
     else setCommandNo(newCommandNo);
   }
+
   /* 下段のコマンドパネルが押された時の処理 */
+  const commandPanel: BoardCommand[] = field.solved ? commands3 : commands2
   const selectCommand2 = (idx: number) => {
-    if (!commands2[idx].func) return
-    const newField: FieldData = commands2[idx].func!(field)
+    if (!commandPanel[idx].func) return
+    const newField: FieldData = commandPanel[idx].func!(field)
     setField(newField)
   }
 
   return (<div className="App" style={{ margin: 0, padding: "10px", background: background, position: "relative" }}>
     <Field field={field} handleClick={handleCellClick} />
     <Commands commands={commands} commandNo={commandNo} selectCommand={selectCommand} />
-    <Commands commands={commands2} selectCommand={selectCommand2} />
+    <Commands commands={commandPanel} selectCommand={selectCommand2} />
   </div>);
 }
 

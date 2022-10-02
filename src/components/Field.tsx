@@ -13,10 +13,12 @@ const Field: React.FC<FieldProps> = (props: FieldProps) => {
   let cellElements: JSX.Element[] = []
   cells.forEach((cell, index) => {
     const color: string | undefined = cell.color ? (props.field.solved ? undefined : cell.color) : undefined
-    const cellElement: JSX.Element = <Cell key={index} cell={{...cell, color: color}} onClick={() => props.handleClick(cell)} />
+    const cellElement: JSX.Element = <Cell key={index}
+      cell={{ ...cell, color: color }}
+      onClick={props.field.solved ? () => { } : () => props.handleClick(cell)} />
     cellElements = [...cellElements, cellElement]
   })
-  const style: {[key: string]: string} = props.field.solved ? {background: "khaki"} : {}
+  const style: { [key: string]: string } = props.field.solved ? { background: "khaki" } : {}
   return (<div data-testid="field" className="field" style={style}>{cellElements}</div>)
 }
 

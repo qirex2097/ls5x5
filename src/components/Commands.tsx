@@ -4,6 +4,7 @@ type CommandLooks = {
   contents: string | JSX.Element
   style?: { [key: string]: string }
   className?: string
+  key?: string
 }
 
 type CommandProps = {
@@ -34,7 +35,7 @@ const Commands = ({commands, commandNo = -1, selectCommand}: CommandsProps) => {
   let commandElements: JSX.Element[] = []
 
   commandElements = commands.map((v, i) => {
-    return <Command key={i}
+    return <Command key={v.key || i}
       command={v}
       testId={`command-${i}`}
       onClick={() => selectCommand(i)} isSelected={commandNo === i} />

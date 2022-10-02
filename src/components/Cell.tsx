@@ -21,6 +21,8 @@ const Cell: React.FC<CellProps> = ({ cell, onClick }: CellProps) => {
     valueElement = <span className="cell value">{cell.value}</span>
   } else if (cell.candidate) {
     valueElement = <span className="cell candidate">{cell.candidate!.join(' ')}</span>
+  } else {
+    valueElement = <span className="cell value" style={{color: "transparent"}}>{""}</span>
   }
 
   let color: { background: string } = { background: "transparent" }
