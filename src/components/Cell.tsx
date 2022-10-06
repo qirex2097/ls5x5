@@ -4,7 +4,7 @@ import "./Cell.css"
 
 type CellProps = {
   cell: CellData
-  onClick?: () => void
+  onClick: () => void
 }
 
 const Cell: React.FC<CellProps> = ({ cell, onClick }: CellProps) => {
@@ -30,9 +30,7 @@ const Cell: React.FC<CellProps> = ({ cell, onClick }: CellProps) => {
     color = { background: cell.color }
   }
 
-  const dummyOnClick = () => {}
-
-  return (<button data-testid="cell" className="cell" style={color} onMouseDown={onClick || dummyOnClick}>{wallElements}{valueElement}</button>)
+  return (<button data-testid="cell" className="cell" style={color} onMouseDown={(e) => {e.preventDefault(); onClick() }}>{wallElements}{valueElement}</button>)
 }
 
 export { Cell }

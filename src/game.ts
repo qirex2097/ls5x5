@@ -15,10 +15,12 @@ type CellData = {
   value?: number;
   candidate?: number[];
   color?: string;
+  isHint: boolean;
 };
 
 type FieldData = {
   blocks: number[][];
+  hint: { [key: number]: number };
   cells: CellData[];
   answer: number[];
   solved: boolean;
@@ -40,18 +42,12 @@ const createField = (): FieldData => {
     blocksTable[Math.floor(Math.random() * 4)]
   );
 
-  //  const hint: { [key: number]: number } = { 0: 1, 1: 2, 2: 3, 3: 4, 4: 5 };
-  const hint: { [key: number]: number } = _getHintCells(field);
-
-  Object.keys(hint).forEach(
-    (key) => (field.cells[parseInt(key)].value = hint[parseInt(key)])
-  );
-
   return field;
 };
 const _createField = (blocks: number[][]): FieldData => {
   const newCells: CellData[] = new Array(TATE * YOKO).fill({ wall: WALL.NONE });
 
+  // ブロックの壁作り
   for (const block of blocks) {
     for (const cell of block) {
       let wall: WALL = WALL.NONE;
@@ -67,10 +63,11 @@ const _createField = (blocks: number[][]): FieldData => {
       if (block.indexOf(cell + TATE) < 0) {
         wall |= WALL.BOTTOM;
       }
-      newCells[cell] = { wall: wall };
+      newCells[cell] = { wall: wall, isHint: false };
     }
   }
 
+  // 周囲の壁作り
   for (let i = 0; i < YOKO; i++) {
     newCells[i] = { ...newCells[i], wall: newCells[i].wall | WALL.TOP };
   }
@@ -86,8 +83,32 @@ const _createField = (blocks: number[][]): FieldData => {
 
   /** 答えを作成 */
   const answer: number[] = _shuffleAnswer(resolver(blocks)); // 答えのラテン方陣
+  const hint: { [key: number]: number } = _getHintCells(answer);
 
-  return { blocks: blocks, cells: newCells, answer: answer, solved: false };
+  Object.keys(hint).forEach(
+    (key) =>
+      (newCells[parseInt(key)] = {
+        ...newCells[parseInt(key)],
+        value: hint[parseInt(key)],
+        isHint: true,
+      })
+  );
+
+  return {
+    blocks: blocks,
+    cells: newCells,
+    answer: answer,
+    hint: hint,
+    solved: false,
+  };
+};
+const resetField = (field: FieldData): FieldData => {
+  const newCells: CellData[] = field.cells.map((v) => {
+    if (v.isHint) return { ...v, candidate: undefined, color: undefined };
+    else
+      return { ...v, value: undefined, candidate: undefined, color: undefined };
+  });
+  return { ...field, cells: newCells };
 };
 
 const setValue = (cell: CellData, value: number): CellData => {
@@ -183,12 +204,12 @@ const _shuffleAnswer = (answer: number[]) => {
   return newAnswer;
 };
 
-const _getHintCells = (field: FieldData): { [key: number]: number } => {
+const _getHintCells = (answer: number[]): { [key: number]: number } => {
   /**
    * 各値（１－５）が割り当てられているセル番号の配列 values を作成
    */
   const values: { [key: number]: number[] } = {};
-  field.answer.forEach((e, i) => {
+  answer.forEach((e, i) => {
     if (values[e]) {
       values[e] = [...values[e], i];
     } else {
@@ -226,6 +247,7 @@ export {
   YOKO,
   WALL,
   createField,
+  resetField,
   setValue,
   addCandidate,
   removeCandidate,

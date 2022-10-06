@@ -7,6 +7,7 @@
     border: none;
     text-align: center;
     transition: all 0.5s ease;
+    user-select: none;
 }
 .cell.value {
     font-family: 'Passion One', cursive;

@@ -36,14 +36,14 @@ test("BLOCKの壁を持つField生成される", () => {
 });
 
 test("setValueはvalueを指定の値に設定する", () => {
-  const cell: CellData = { wall: WALL.NONE };
+  const cell: CellData = { wall: WALL.NONE, isHint: false };
   expect(cell.value).not.toBe(1);
   const newCell: CellData = setValue(cell, 1);
   expect(newCell.value).toBe(1);
 });
 
 test("setValue, addCandidate", () => {
-  const cell: CellData = { wall: WALL.NONE };
+  const cell: CellData = { wall: WALL.NONE, isHint: false };
   expect(cell.candidate).not.toBe(1);
   const newCell: CellData = addCandidate(cell, 1);
   expect(newCell.candidate!.length).toBe(1);
