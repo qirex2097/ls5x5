@@ -5,7 +5,7 @@ import { CellData, WALL } from "../../game"
 test("セルが描画される", () => {
   const cell: CellData = { wall: WALL.NONE, isHint: false }
   render(<Cell cell={cell} onClick={()=>{}}/>);
-  expect(screen.getByRole("button")).toBeInTheDocument()
+  expect(screen.getByTestId("cell")).toBeInTheDocument()
 });
 
 test("壁がないセルが描画される", () => {
@@ -39,5 +39,5 @@ test("セルの色はオレンジ", () => {
   const color: string = "orange"
   const cell: CellData = { wall: WALL.TOP, color: color, isHint: false }
   render(<Cell cell={cell} onClick={()=>{}}/>);
-  expect(screen.getByRole("button")).toHaveStyle(`background: ${color}`)
+  expect(screen.getByTestId("cell")).toHaveStyle(`background: ${color}`)
 })

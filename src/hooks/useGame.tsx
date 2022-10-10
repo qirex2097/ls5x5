@@ -1,23 +1,9 @@
 import React from "react";
-import {
-  createField,
-  resetField,
-  CellData,
-  FieldData,
-  addCandidate,
-  removeCandidate,
-  checkField,
-} from "../game";
+import * as G from '../game'
+import { CellData, FieldData } from '../game'
 import { CommandLooks } from "../components/Commands";
-import {
-  UndoRedo,
-  resetAction,
-  setAction,
-  undoAction,
-  redoAction,
-  canUndo,
-  canRedo,
-} from "../undo";
+import * as UR from '../undo'
+import { UndoRedo, } from "../undo";
 
 const toggleValue = (cell: CellData, value: number): CellData | null => {
   if (cell.isHint) return null;
@@ -33,12 +19,12 @@ const toggleCandidate = (cell: CellData, value: number): CellData | null => {
 
   if (cell.candidate) {
     if (cell.candidate.indexOf(value) < 0) {
-      return addCandidate(cell, value);
+      return G.addCandidate(cell, value);
     } else {
-      return removeCandidate(cell, value);
+      return G.removeCandidate(cell, value);
     }
   } else {
-    return addCandidate(cell, value);
+    return G.addCandidate(cell, value);
   }
 };
 const toggleColor = (cell: CellData, color: string): CellData | null => {
@@ -183,16 +169,16 @@ const commands: CellCommand[] = [
   },
   {
     contents: "",
-    style: { background: "slateblue" },
+    style: { background: "yellowgreen" },
     func: (cell: CellData) => {
-      return toggleColor(cell, "slateblue");
+      return toggleColor(cell, "yellowgreen");
     },
   },
   {
     contents: "",
-    style: { background: "mediumorchid" },
+    style: { background: "orchid" },
     func: (cell: CellData) => {
-      return toggleColor(cell, "mediumorchid");
+      return toggleColor(cell, "orchid");
     },
   },
   {
@@ -218,22 +204,22 @@ const useGame = (): [
   selectCommand: (newCommandNo: number) => void,
   selectCommand2: (idx: number) => void
 ] => {
-  const [field, setField] = React.useState<FieldData>(createField());
+  const [field, setField] = React.useState<FieldData>(G.createField());
   const [commandNo, setCommandNo] = React.useState<number>(-1);
   const [state, setState] = React.useState<UndoRedo<CellData[]>>(
-    resetAction<CellData[]>(field.cells)
+    UR.resetAction<CellData[]>(field.cells)
   );
 
   const commandBackground: string = "orange"
-  const undoColor: string = canUndo(state) ? "white" : "lightgrey";
-  const redoColor: string = canRedo(state) ? "white" : "lightgrey";
+  const undoColor: string = UR.canUndo(state) ? "white" : "lightgrey";
+  const redoColor: string = UR.canRedo(state) ? "white" : "lightgrey";
   const commands2: BoardCommand[] = [
     {
       className: "moji",
       contents: "UNDO",
       style: { fontSize: "24px", color: undoColor, background: commandBackground },
       func: (field: FieldData) => {
-        const newState: UndoRedo<CellData[]> = undoAction<CellData[]>(state);
+        const newState: UndoRedo<CellData[]> = UR.undoAction<CellData[]>(state);
         setState(newState);
         return { ...field, cells: newState.current };
       },
@@ -243,7 +229,7 @@ const useGame = (): [
       contents: "REDO",
       style: { fontSize: "24px", color: redoColor, background: commandBackground },
       func: (field: FieldData) => {
-        const newState: UndoRedo<CellData[]> = redoAction<CellData[]>(state);
+        const newState: UndoRedo<CellData[]> = UR.redoAction<CellData[]>(state);
         setState(newState);
         return { ...field, cells: newState.current };
       },
@@ -254,9 +240,9 @@ const useGame = (): [
       contents: "RETRY",
       style: { fontSize: "24px", background: commandBackground },
       func: (field: FieldData) => {
-        const newField: FieldData = resetField(field);
+        const newField: FieldData = G.resetField(field);
         setField(newField)
-        setState(setAction<CellData[]>(state, newField.cells))
+        setState(UR.setAction<CellData[]>(state, newField.cells))
         return newField
       }
     },
@@ -266,7 +252,7 @@ const useGame = (): [
       contents: "️FINISH",
       style: { fontSize: "24px", background: commandBackground },
       func: (field: FieldData) => {
-        if (checkField(field)) return { ...field, solved: true };
+        if (G.checkField(field)) return { ...field, solved: true };
         else return field;
       },
     },
@@ -280,8 +266,8 @@ const useGame = (): [
       contents: "RETRY",
       style: { fontSize: "24px", background: command3Background },
       func: (field: FieldData) => {
-        const newField: FieldData = createField();
-        setState(resetAction<CellData[]>(newField.cells));
+        const newField: FieldData = G.createField();
+        setState(UR.resetAction<CellData[]>(newField.cells));
         return newField;
       },
     },
@@ -301,7 +287,7 @@ const useGame = (): [
       }
     });
     setField({ ...field, cells: newCells });
-    setState(setAction<CellData[]>(state, newCells));
+    setState(UR.setAction<CellData[]>(state, newCells));
   };
   /* 上段のコマンドパネルが押された時の処理 */
   const selectCommand = (newCommandNo: number) => {

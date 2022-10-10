@@ -17,5 +17,5 @@ test('Fieldは25のCellを持つ', () => {
   const field: FieldData = createField()
 
   render(<Field field={field} handleClick={dummyCommand} />)
-  expect(screen.getAllByRole('button').length).toBe(25)
+  expect(screen.getAllByTestId('cell').length).toBe(25)
 })
