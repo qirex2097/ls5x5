@@ -16,13 +16,13 @@ type CommandProps = {
 
 const Command = (props: CommandProps) => {
   const className: string = `cell command ${props.command.className} ${props.isSelected ? "selected" : ""}`
-  return <button
+  return <div
     data-testid={props.testId}
     className={className}
     style={props.command.style}
     onClick={props.onClick}>
     {props.command.contents ? props.command.contents : ''}
-  </button>
+  </div>
 }
 
 type CommandsProps = {

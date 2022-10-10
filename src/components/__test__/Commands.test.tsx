@@ -21,7 +21,7 @@ test("コマンドパネルが描画される", () => {
 
 test("コマンドパネルは５つのボタンを持つ", () => {
   render(<Commands commands={commandData} commandNo={-1} selectCommand={(i: number) => {}}/>)
-  expect(screen.getAllByRole("button").length).toBe(5)
+  expect(screen.getAllByTestId(/command-/).length).toBe(5)
 })
 
 test("１番コマンドのコンテンツは１", () => {
