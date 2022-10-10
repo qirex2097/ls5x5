@@ -108,7 +108,7 @@ const commands: CellCommand[] = [
     className: "candidate",
     contents: (
       <>
-        <span>1</span>
+        <span>1&nbsp;</span>
         <span style={{ color: candidateColor }}> 2 3 4 5</span>
       </>
     ),
@@ -121,7 +121,7 @@ const commands: CellCommand[] = [
     contents: (
       <>
         <span style={{ color: candidateColor }}>1 </span>
-        <span>2</span>
+        <span>&nbsp;2&nbsp;</span>
         <span style={{ color: candidateColor }}> 3 4 5</span>
       </>
     ),
@@ -134,7 +134,7 @@ const commands: CellCommand[] = [
     contents: (
       <>
         <span style={{ color: candidateColor }}>1 2 </span>
-        <span>3</span>
+        <span>&nbsp;3&nbsp;</span>
         <span style={{ color: candidateColor }}> 4 5</span>
       </>
     ),
@@ -147,7 +147,7 @@ const commands: CellCommand[] = [
     contents: (
       <>
         <span style={{ color: candidateColor }}>1 2 3 </span>
-        <span>4</span>
+        <span>&nbsp;4&nbsp;</span>
         <span style={{ color: candidateColor }}> 5</span>
       </>
     ),
@@ -160,7 +160,7 @@ const commands: CellCommand[] = [
     contents: (
       <>
         <span style={{ color: candidateColor }}>1 2 3 4 </span>
-        <span>5</span>
+        <span>&nbsp;5</span>
       </>
     ),
     func: (cell: CellData) => {

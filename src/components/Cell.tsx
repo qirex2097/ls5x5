@@ -30,7 +30,7 @@ const Cell: React.FC<CellProps> = ({ cell, onClick }: CellProps) => {
     color = { background: cell.color }
   }
 
-  return (<button data-testid="cell" className="cell" style={color} onMouseDown={(e) => {e.preventDefault(); onClick() }}>{wallElements}{valueElement}</button>)
+  return (<div data-testid="cell" className="cell" style={color} onPointerDown={(e) => {e.preventDefault(); onClick() }}>{wallElements}{valueElement}</div>)
 }
 
 export { Cell }
