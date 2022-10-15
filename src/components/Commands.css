@@ -19,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.10s ease;
+  transition: none;
 }
 .command.selected {
   background: skyblue;

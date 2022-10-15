@@ -51,6 +51,6 @@ test("押されたボタンのidx番号を返す", () => {
   const testId: string = `command-${pushedCommandNo}`
   render(<Commands commands={commandData} commandNo={commandNo} selectCommand={(i: number) => {commandNo = i}}/>)
   expect(commandNo).not.toBe(pushedCommandNo)
-  fireEvent.click(screen.getByTestId(testId))
+  fireEvent.pointerDown(screen.getByTestId(testId))
   expect(commandNo).toBe(pushedCommandNo)
 })

@@ -20,7 +20,7 @@ const Command = (props: CommandProps) => {
     data-testid={props.testId}
     className={className}
     style={props.command.style}
-    onClick={props.onClick}>
+    onPointerDown={props.onClick}>
     {props.command.contents ? props.command.contents : ''}
   </div>
 }

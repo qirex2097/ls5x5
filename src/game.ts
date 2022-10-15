@@ -82,8 +82,11 @@ const _createField = (blocks: number[][]): FieldData => {
   }
 
   /** 答えを作成 */
-  const answer: number[] = _shuffleAnswer(resolver(blocks)); // 答えのラテン方陣
-  const hint: { [key: number]: number } = _getHintCells(answer);
+  const answers: number[][] = resolver(blocks);
+  const answer: number[] = _shuffleAnswer(
+    answers[Math.floor(Math.random() * answers.length)]
+  ); // 答えのラテン方陣
+  const hint: { [key: number]: number } = _getHintCells(answer, answers);
 
   Object.keys(hint).forEach(
     (key) =>
@@ -176,7 +179,8 @@ const _getPeers = (cellNo: number, blocks: number[][]): number[] => {
   return result.filter((e, i) => result.indexOf(e) === i);
 };
 
-const resolver = (blocks: number[][]): number[] => {
+const resolver = (blocks: number[][]): number[][] => {
+  let answers: number[][] = [];
   for (const ls of latinSquare) {
     let flg: boolean = true;
     for (const block of blocks) {
@@ -187,10 +191,10 @@ const resolver = (blocks: number[][]): number[] => {
       )
         flg = false;
     }
-    if (flg) return ls;
+    if (flg) answers = [...answers, ls];
   }
 
-  return [];
+  return answers;
 };
 
 /** 1-5の数字をランダムに1-5へ変換 */
@@ -204,32 +208,96 @@ const _shuffleAnswer = (answer: number[]) => {
   return newAnswer;
 };
 
-const _getHintCells = (answer: number[]): { [key: number]: number } => {
+const _getHintCells = (
+  answer: number[],
+  answers: number[][]
+): { [key: number]: number } => {
+  let hintCells: { [key: number]: number } = {}; //戻り値用
+
   /**
-   * 各値（１－５）が割り当てられているセル番号の配列 values を作成
+   * 各値（１－５）が割り当てられているセル番号の配列 cells を作成
+   * 1: [0, 9, 12, 16, 23]
+   * 2: [1, 7, 13, 19, 20]
+   * 3: [2, 8, 14, 15, 21]
+   * 4: [3, 5, 11, 17, 24]
+   * 5: [4, 6, 10, 18, 22]
    */
-  const values: { [key: number]: number[] } = {};
+  const cells: { [key: string]: number[] } = {};
   answer.forEach((e, i) => {
-    if (values[e]) {
-      values[e] = [...values[e], i];
+    if (cells[e]) {
+      cells[e] = [...cells[e], i];
     } else {
-      values[e] = [i];
+      cells[e] = [i];
     }
   });
 
-  /** １－５のうちのいずれかのヒントを隠す excludeKey */
-  const excludeKey: string =
-    Object.keys(values)[Math.floor(Math.random() * Object.keys(values).length)];
+  if (answers.length === 1) {
+    /** 1-5 のいずれかをヒントから削除 */
+    const deleteKey: string =
+      Object.keys(cells)[Math.floor(Math.random() * Object.keys(cells).length)];
+    cells[deleteKey] = [];
+  } else if (answers.length === 2) {
+    /**
+     * 解答候補間で答えが異なるセルを抽出 -> starCells
+     * 4: [5, 11]
+     * 5: [6, 10]
+     */
+    const starCells: { [key: string]: number[] } = {};
+    answers[0]
+      .reduce((prev: number[], e, i) => {
+        if (e !== answers[1][i]) return [...prev, i];
+        else return prev;
+      }, [])
+      .forEach((e) => {
+        const key = answer[e];
+        if (starCells[key]) {
+          starCells[key] = [...starCells[key], e];
+        } else {
+          starCells[key] = [e];
+        }
+      });
+    const keys: string[] = Object.keys(starCells); // スターセルの値を抽出 ['4', '5']
+
+    /**
+     * starCells 以外のセル番号を抽出 -> starCellsSub
+     * 4: [3, 17, 24]
+     * 5: [4, 18, 22]
+     */
+    const starCellsSub: { [key: string]: number[] } = {};
+    keys.forEach((e) => {
+      starCellsSub[e] = cells[e].filter((v) => starCells[e].indexOf(v) < 0);
+    });
+
+    /** スターセルのヒントをクリア */
+    keys.forEach((e) => {
+      cells[e] = [];
+    });
+
+    const hcells1: number[] = keys.reduce((prev: number[], v: string) => {
+      return [...prev, ...starCells[v]];
+    }, []);
+    const hcells2: number[] = keys.reduce((prev: number[], v: string) => {
+      return [...prev, ...starCellsSub[v]];
+    }, []);
+    const hc1: number = hcells1[Math.floor(Math.random() * hcells1.length)];
+    const hc2: number = hcells2[Math.floor(Math.random() * hcells2.length)];
+    hintCells[hc1] = answer[hc1];
+    hintCells[hc2] = answer[hc2];
+    if (answer[hc1] !== answer[hc2]) {
+      const deleteKeys = Object.keys(cells).filter((v) => keys.indexOf(v) < 0);
+      const deleteKey: string =
+        deleteKeys[Math.floor(Math.random() * deleteKeys.length)];
+      cells[deleteKey] = [];
+    }
+  }
+
   /**
    * ヒントのセル番号とそこに入れる値 cellNo : value のヒント hintCells を作成
    */
-  let hintCells: { [key: number]: number } = {};
-  Object.keys(values).forEach((key) => {
-    if (excludeKey !== key) {
-      const p: number = Math.floor(
-        Math.random() * values[parseInt(key)].length
-      );
-      hintCells[values[parseInt(key)][p]] = parseInt(key);
+  Object.keys(cells).forEach((key) => {
+    if (cells[key].length > 0) {
+      const p: number = Math.floor(Math.random() * cells[key].length);
+      hintCells[cells[key][p]] = parseInt(key);
     }
   });
 

@@ -268,6 +268,7 @@ const useGame = (): [
       func: (field: FieldData) => {
         const newField: FieldData = G.createField();
         setState(UR.resetAction<CellData[]>(newField.cells));
+        setCommandNo(-1);
         return newField;
       },
     },

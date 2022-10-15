@@ -97,7 +97,8 @@ test("_getPeersは正しく仲間を返す", () => {
   }
 });
 test("resolver", () => {
-  const answer: number[] = resolver(sample_blocks);
+  const answers: number[][] = resolver(sample_blocks);
+  const answer: number[] = answers[0];
 
   expect(answer.length).toBe(25);
   expect(answer[0]).toBe(1);
@@ -112,4 +113,18 @@ test("checkField", () => {
   expect(checkField(field)).toBe(false);
   field.cells.forEach((cell, i) => (cell.value = field.answer[i]));
   expect(checkField(field)).toBe(true);
+});
+
+const sample_blocks2: number[][] = [
+  [0, 1, 5, 10, 15],
+  [4, 3, 8, 13, 12],
+  [24, 19, 18, 14, 9],
+  [20, 21, 22, 17, 23],
+  [2, 6, 7, 11, 16],
+];
+
+test("resolver 2", () => {
+  const answers: number[][] = resolver(sample_blocks2);
+  expect(answers.length).toBe(2);
+  __local__._getHintCells(answers[0], answers);
 });
